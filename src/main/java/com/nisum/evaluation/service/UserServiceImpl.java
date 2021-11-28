@@ -3,6 +3,7 @@ package com.nisum.evaluation.service;
 import com.nisum.evaluation.dao.IUserDAO;
 import com.nisum.evaluation.domain.User;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,19 +23,19 @@ public class UserServiceImpl implements IUserService {
     @Override
     @Transactional(readOnly = true)
     public List<User> getUserList() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return userDao.findUserListWithoutActive();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public User getUserById(User user) {
-        return userDao.findById(user.getId()).orElse(null);
+    public User getUserById(UUID id) {
+        return userDao.findById(id).orElse(null);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public User getUserByEmail(User user) {
-        return userDao.findByEmail(user.getEmail()).orElse(null);
+    public User getUserByEmail(String email) {
+        return userDao.findByEmail(email).orElse(null);
     }
     
     @Transactional
@@ -52,7 +53,8 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     @Transactional
-    public void deleteUser(User user) {
+    public void deleteUser(UUID id) {
+        User user = getUserById(id);
         userDao.delete(user);
     }
 

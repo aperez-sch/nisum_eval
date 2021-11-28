@@ -3,9 +3,12 @@ package com.nisum.evaluation.service;
 import com.nisum.evaluation.dao.IPhoneDAO;
 import com.nisum.evaluation.domain.Phone;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Service
 public class PhoneServiceImpl implements IPhoneService{
 
     @Autowired
@@ -19,8 +22,8 @@ public class PhoneServiceImpl implements IPhoneService{
 
     @Override
     @Transactional(readOnly = true)
-    public Phone getPhoneById(Phone phone) {
-        return phoneDao.findById(phone.getId()).orElse(null);
+    public Phone getPhoneById(UUID id) {
+        return phoneDao.findById(id).orElse(null);
     }
 
     @Override
@@ -56,8 +59,8 @@ public class PhoneServiceImpl implements IPhoneService{
 
     @Override
     @Transactional
-    public void deletePhone(Phone phone) {
+    public void deletePhone(UUID id) {
+        Phone phone = getPhoneById(id);
         phoneDao.delete(phone);
     }
-    
 }
