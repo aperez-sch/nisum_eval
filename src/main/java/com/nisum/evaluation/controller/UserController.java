@@ -18,15 +18,20 @@ public class UserController {
     @Autowired
     private IUserService userService;
     
-    @PostMapping("/login")
-    public String login(@RequestBody User user) {
+    //@PostMapping("/login")
+    @GetMapping("/")
+    public String login(/*@RequestBody User user*/) {
         //TODO
-        return null;
+        return "hola";
     }
     
+    /**
+     * get users without users disabled
+     * @return list of users
+     */
     @GetMapping("/users")
     public ResponseEntity<List<User>> getUsers() {
-        log.info("REST request to get Users : {}");
+        log.info("REST request to get Users");
         List<User> results = userService.getUserList();
         return ResponseEntity.ok(results);
     }
@@ -67,5 +72,4 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.ok();
     }
-
 }

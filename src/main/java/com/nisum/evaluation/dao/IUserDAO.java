@@ -11,6 +11,6 @@ public interface IUserDAO extends CrudRepository<User, UUID> {
     @Query("SELECT u FROM User u WHERE u.email = ?1")
     Optional<User> findByEmail(String email);
     
-    @Query("SELECT u FROM User u WHERE u.active = false")
+    @Query("SELECT u FROM User u WHERE u.active = true")
     List<User> findUserListWithoutActive();
 }

@@ -1,6 +1,8 @@
 
 package com.nisum.evaluation.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
@@ -34,7 +36,8 @@ public class User implements Serializable {
     
     private Boolean active;
     
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @JsonIgnoreProperties(value = "user")
     private List<Phone> phones;
     
     @PrePersist

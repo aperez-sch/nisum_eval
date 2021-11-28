@@ -1,5 +1,7 @@
 package com.nisum.evaluation.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.UUID;
 import javax.persistence.*;
 import lombok.Data;
@@ -16,10 +18,12 @@ public class Phone {
     private String number;
     
     @Column(name = "city_code")
+    @JsonProperty(value = "citycode")
     private String cityCode;
     
     @Column(name = "country_code")
-    private String countryCode;
+    @JsonProperty(value = "countrycode")//en el PDF este campo esta como contrycode
+    private String countryCode;         //se asumio que era un error y se cambio a country
     
     @JoinColumn(name = "id_user", referencedColumnName = "id")
     @ManyToOne
