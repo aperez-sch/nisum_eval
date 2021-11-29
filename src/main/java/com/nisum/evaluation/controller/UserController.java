@@ -1,11 +1,15 @@
 package com.nisum.evaluation.controller;
 
 import com.nisum.evaluation.domain.User;
+import com.nisum.evaluation.exception.WritingDBEx;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.nisum.evaluation.service.IUserService;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
@@ -30,46 +34,93 @@ public class UserController {
      * @return list of users
      */
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getUsers() {
+    public ResponseEntity<?> getUsers() {
         log.info("REST request to get Users");
-        List<User> results = userService.getUserList();
-        return ResponseEntity.ok(results);
+        try {
+            List<User> results = userService.getUserList();
+            return ResponseEntity.ok(results);
+        } catch (Exception e) {
+            Map<String, String> message = new HashMap<String,String>();
+            message.put("Error: ", "Error al consultar la lista de usuarios");
+            return ResponseEntity.status(HttpStatus.FOUND).body(message);
+        }
     }
     
     @GetMapping("/userById/{id}")
-    public ResponseEntity<User> getUserByEmail(@PathVariable UUID id) {
+    public ResponseEntity<?> getUserById(@PathVariable UUID id) {
         log.info("REST request to get User by id : {} ", id);
-        User result = userService.getUserById(id);
-        return ResponseEntity.ok(result);
+        try {
+            User result = userService.getUserById(id);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            Map<String, String> message = new HashMap<String,String>();
+            message.put("Error: ", "Error al consultar usuario por id: " + id);
+            return ResponseEntity.status(HttpStatus.FOUND).body(message);
+        }
+        
     }
     
     @GetMapping("/userByEmail/{email}")
-    public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
+    public ResponseEntity<?> getUserByEmail(@PathVariable String email) {
         log.info("REST request to get User by email : {} ", email);
-        User result = userService.getUserByEmail(email);
-        return ResponseEntity.ok(result);
+        try {
+            User result = userService.getUserByEmail(email);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            Map<String, String> message = new HashMap<String,String>();
+            message.put("Error: ", "Error al consultar usuario por email: " + email);
+            return ResponseEntity.status(HttpStatus.FOUND).body(message);
+        }
     }
     
     @PostMapping("/insertUser")
-    public ResponseEntity<User> insertUser(@RequestBody User user) throws Exception {
+    public ResponseEntity<?> insertUser(@RequestBody User user) {
         log.debug("REST request to save User : {}", user);
-        if (user.getId() != null) { throw new Exception("colocar excepcion"); }
-        userService.insertUser(user);
-        return ResponseEntity.ok(user);
+        if (user.getId() != null) { 
+            Map<String, String> message = new HashMap<String,String>();
+            message.put("Error: ", "El elemento a insertar no puede poseer un ID");
+            return ResponseEntity.status(HttpStatus.FOUND).body(message);
+        }
+        try {
+            userService.insertUser(user);
+            return ResponseEntity.ok(user);
+        } catch (WritingDBEx e) {
+            Map<String, String> message = new HashMap<String,String>();
+            message.put("mensaje: ", e.getMessage());
+            return ResponseEntity.status(HttpStatus.FOUND).body(message);
+        }
+        
     }
     
     @PutMapping("/updateUser")
-    public ResponseEntity<User> updateUser(@RequestBody User user) throws Exception {
+    public ResponseEntity<?> updateUser(@RequestBody User user) throws Exception {
         log.debug("REST request to update User : {}", user);
-        if (user.getId() == null) { throw new Exception("colocar excepcion"); }
-        userService.updateUser(user);
-        return ResponseEntity.ok(user);
+        if (user.getId() == null) { 
+            Map<String, String> message = new HashMap<String,String>();
+            message.put("Error: ", "El elemento a actualizar debe poseer un ID");
+            return ResponseEntity.status(HttpStatus.FOUND).body(message);
+        }
+        try {
+            userService.updateUser(user);
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            Map<String, String> message = new HashMap<String,String>();
+            message.put("Error: ", "Error al actualizar usuario: " + user);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
+        }
     }
     
     @DeleteMapping("/user/{id}")
-    public ResponseEntity.BodyBuilder deleteUser(@PathVariable UUID id) {
+    public ResponseEntity<?> deleteUser(@PathVariable UUID id) {
         log.debug("REST request to delete User with id : {}", id);
-        userService.deleteUser(id);
-        return ResponseEntity.ok();
+        try {
+            userService.deleteUser(id);
+            return (ResponseEntity<?>) ResponseEntity.ok();
+        } catch (Exception e) {
+            Map<String, String> message = new HashMap<String,String>();
+            message.put("Error: ", "Error al eliminar usuario: " + id);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
+        }
+        
     }
 }

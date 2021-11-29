@@ -3,6 +3,7 @@ package com.nisum.evaluation.service;
 import com.nisum.evaluation.dao.IUserDAO;
 import com.nisum.evaluation.domain.Phone;
 import com.nisum.evaluation.domain.User;
+import com.nisum.evaluation.exception.WritingDBEx;
 import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -52,15 +53,15 @@ public class UserServiceImpl implements IUserService {
     
     @Transactional
     @Override
-    public void insertUser(User user) {
+    public void insertUser(User user) { 
         log.info("User service - insertUser {}", user);
+        User found = getUserByEmail(user.getEmail());
+        if (found!=null) throw new WritingDBEx("El correo ya se encuentra registrado");
         userDao.save(user);
-        System.out.println("USAR AHORA VALE:" + user);
         for (Phone phone : user.getPhones()) {
             phone.setUser(user);
             this.phoneService.insertPhone(phone);
         }
-        
     }
 
     @Override
