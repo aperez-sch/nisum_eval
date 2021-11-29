@@ -3,9 +3,11 @@ package com.nisum.evaluation.service;
 import com.nisum.evaluation.dao.IUserDAO;
 import com.nisum.evaluation.domain.Phone;
 import com.nisum.evaluation.domain.User;
-import com.nisum.evaluation.exception.WritingDBEx;
+import com.nisum.evaluation.exception.DBException;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,8 +57,13 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void insertUser(User user) { 
         log.info("User service - insertUser {}", user);
+        if (!validateEmail(user.getEmail())) throw new DBException("El correo no posee el formato correcto. "
+                                                            + "(Ejemplo:nombrecorreo@dominio.cl)");
+        if (!validatePass(user.getPassword())) 
+            throw new DBException("La clave no posee un formato valido, debe comenzar por una Mayuscula, el resto en minuscula "
+                    + "y finalizar en 2 numeros, ejemplo: Aabcdefghi32");
         User found = getUserByEmail(user.getEmail());
-        if (found!=null) throw new WritingDBEx("El correo ya se encuentra registrado");
+        if (found!=null) throw new DBException("El correo ya se encuentra registrado");
         userDao.save(user);
         for (Phone phone : user.getPhones()) {
             phone.setUser(user);
@@ -86,5 +93,27 @@ public class UserServiceImpl implements IUserService {
         user.setActive(false);
         userDao.save(user);
     }
-    
+    /**
+     * validate email format. example: axyz@domail.cl
+     * @param email
+     * @return true if is valid, else false
+     */
+    private Boolean validateEmail(String email) {
+        Pattern pattern = Pattern
+                .compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                        + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+        Matcher mather = pattern.matcher(email);        
+        return mather.find();
+    }
+    /**
+     * validate password format. 1 Upper, many lower and end with 2 numbers
+     * Example: Aabcdef12
+     * @param pass
+     * @return true if is valid, else false
+     */
+    private Boolean validatePass(String pass) {
+        Pattern pattern = Pattern.compile("^[A-Z][a-z]+[0-9]{2}$");
+        Matcher mather = pattern.matcher(pass);        
+        return mather.find();
+    }
 }

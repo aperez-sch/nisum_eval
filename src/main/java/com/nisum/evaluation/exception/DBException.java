@@ -2,10 +2,10 @@
 package com.nisum.evaluation.exception;
 
 
-public class WritingDBEx extends RuntimeException {
+public class DBException extends RuntimeException {
     
     private String message;
-    public WritingDBEx(String message) {
+    public DBException(String message) {
         super(message);
         this.message = message;
     }

@@ -1,7 +1,7 @@
 package com.nisum.evaluation.controller;
 
 import com.nisum.evaluation.domain.User;
-import com.nisum.evaluation.exception.WritingDBEx;
+import com.nisum.evaluation.exception.DBException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.nisum.evaluation.service.IUserService;
@@ -84,7 +84,7 @@ public class UserController {
         try {
             userService.insertUser(user);
             return ResponseEntity.ok(user);
-        } catch (WritingDBEx e) {
+        } catch (DBException e) {
             Map<String, String> message = new HashMap<String,String>();
             message.put("mensaje: ", e.getMessage());
             return ResponseEntity.status(HttpStatus.FOUND).body(message);

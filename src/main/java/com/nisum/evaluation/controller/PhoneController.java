@@ -19,7 +19,7 @@ public class PhoneController {
     private IPhoneService phoneService;
     
     @GetMapping("/phones")
-    public ResponseEntity<List<Phone>> getPhoness() {
+    public ResponseEntity<List<Phone>> getPhones() {
         log.info("REST request to get phones : {}");
         List<Phone> results = phoneService.getPhoneList();
         return ResponseEntity.ok(results);

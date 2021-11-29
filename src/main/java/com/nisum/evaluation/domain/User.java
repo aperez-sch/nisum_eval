@@ -1,14 +1,12 @@
 
 package com.nisum.evaluation.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import javax.persistence.*;
-import lombok.Data;
 
 @Entity
 @Table(name = "users")
@@ -18,7 +16,6 @@ public class User implements Serializable {
     
     @Id
     @Column(unique = true, updatable = false)
-    //@GeneratedValue(strategy = GenerationType.TABLE)
     private UUID id;
     
     private String name;
